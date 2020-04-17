@@ -27,14 +27,14 @@ EOF
 set -eu
 
 # Internal defaults
-USER=''
-PROJECT='' # Note- should be the full pbs flag '-P a12' if overriding
+USER='gs9353'
+PROJECT='-P e14' # Note- should be the full pbs flag '-P a12' if overriding
 LOGINNODE='gadi.nci.org.au'
-QUEUE='normal'
-NCPUS='1'
+QUEUE='express'
+NCPUS='2'
 MEM=''
-WALLTIME=1:00:00
-JOBFS=100gb
+WALLTIME=10:00:00
+JOBFS=400gb
 CONDA_ENV=analysis3-20.01
 
 # Handle arguments
@@ -118,6 +118,7 @@ module purge
 
 eval "\\\$(/g/data/hh5/public/apps/miniconda3/bin/conda shell.bash hook)"
 conda activate "${CONDA_ENV}"
+#conda activate now-postprocess
 
 set -eu
 
@@ -140,7 +141,7 @@ export DASK_LABEXTENSION__FACTORY__KWARGS__LOCAL_DIRECTORY=\\\$PBS_JOBFS/dask-wo
 export DASK_LABEXTENSION__DEFAULT__WORKERS=\\\$PBS_NCPUS
 export DASK_DISTRIBUTED__DASHBOARD__LINK="/proxy/{port}/status"
 
-jupyter notebook --NotebookApp.token="\\\$TOKEN" --no-browser --ip="\\\$HOSTNAME" --port "\\\$PORT" --port-retries=0
+jupyter lab --NotebookApp.token="\\\$TOKEN" --no-browser --ip="\\\$HOSTNAME" --port "\\\$PORT" --port-retries=0
 EOQ
 
 storage="gdata/hh5"

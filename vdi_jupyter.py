@@ -165,7 +165,7 @@ def start_tunnel(params):
     # This print statement is needed as there are /r/n line endings from
     # the jupyter notebook output that are difficult to suppress
     logging.info("Starting ssh tunnel...")
-    tunnel = ssh(cmd, params, login_timeout=2)
+    tunnel = ssh(cmd, params, login_timeout=10)
     tunnel.expect (pexpect.EOF)
 
     # Open web browser and log result
@@ -221,12 +221,14 @@ def main(args):
 
     logging.info("Running Jupyter on VDI...")
 
-    setupconda = params.get('setupconda',
-              """module use /g/data3/hh5/public/modules
-                 && module load conda/analysis3
-              """.replace('\n', ' '))
+    #setupconda = params.get('setupconda',
+    #                        """module use /g/data3/hh5/public/modules
+    #                           && module load conda/analysis3
+    #                          """.replace('\n', ' '))
+    
+    setupconda = params.get('setupconda', "conda activate now-postprocess")
 
-    jupyterapp = params.get('jupyterapp',  "notebook")
+    jupyterapp = params.get('jupyterapp',  "lab")
     run_jupyter = "jupyter %s --no-browser --port {jupyterport}" % jupyterapp
     run_jupyter = setupconda + ' && ' + run_jupyter
 
@@ -235,7 +237,7 @@ def main(args):
     logging.info("Waiting for Jupyter to start...")
 
     # Launch jupyter on VDI
-    s = ssh(cmd, params, login_timeout=2)
+    s = ssh(cmd, params, login_timeout=10)
     ret = s.expect('http://\S*:(?P<jupyterport>\d+)/\?token=(?P<token>[a-zA-Z0-9]+)')
 
     if s.match:
